@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import {
   CdkDragDrop,
   moveItemInArray,
@@ -6,8 +7,10 @@ import {
 } from '@angular/cdk/drag-drop';
 import { Dialog } from '@angular/cdk/dialog';
 import { TodoDialogComponent } from '@boards/components/todo-dialog/todo-dialog.component';
-
 import { ToDo, Column } from '@models/todo.model';
+import { BoardsService } from '@services/boards.service';
+import { Board } from '@models/board.model';
+import { Card } from '@models/card.model';
 
 @Component({
   selector: 'app-board',
@@ -23,7 +26,11 @@ import { ToDo, Column } from '@models/todo.model';
     `,
   ],
 })
-export class BoardComponent {
+export class BoardComponent implements OnInit {
+
+  board: Board | null = null;
+
+/* Se pone dinámico luego de los modelos de cards y lists.
   columns: Column[] = [
     {
       title: 'ToDo',
@@ -57,10 +64,23 @@ export class BoardComponent {
       ],
     },
   ];
+*/
+  constructor(
+    private dialog: Dialog,
+    private route: ActivatedRoute,
+    private boardService: BoardsService
+  ) {}
 
-  constructor(private dialog: Dialog) {}
-
-  drop(event: CdkDragDrop<ToDo[]>) {
+  ngOnInit(){
+    this.route.paramMap.subscribe(params => {
+        const id = params.get('boardId');
+        if(id){
+          this.getBoard(id);
+        }
+      }
+    )
+  }
+  drop(event: CdkDragDrop<Card[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(
         event.container.data,
@@ -78,18 +98,18 @@ export class BoardComponent {
   }
 
   addColumn() {
-    this.columns.push({
+    /*this.columns.push({
       title: 'New Column',
       todos: [],
-    });
+    });*/
   }
 
-  openDialog(todo: ToDo) {
+  openDialog(card: Card) {
     const dialogRef = this.dialog.open(TodoDialogComponent, {
       minWidth: '300px',
       maxWidth: '50%',
       data: {
-        todo: todo,
+        card: card,
       },
     });
     dialogRef.closed.subscribe((output) => {
@@ -97,5 +117,12 @@ export class BoardComponent {
         console.log(output);
       }
     });
+  }
+  
+  private getBoard(id: string){
+    this.boardService.getBoard(id)
+    .subscribe(board => {
+      this.board = board
+    })
   }
 }

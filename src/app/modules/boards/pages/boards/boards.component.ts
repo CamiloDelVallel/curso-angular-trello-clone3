@@ -38,3 +38,4 @@ export class BoardsComponent implements OnInit{
     })
   }
 }
+
