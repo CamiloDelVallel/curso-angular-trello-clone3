@@ -3,6 +3,7 @@ import { faBox, faWaveSquare, faClock, faAngleUp, faAngleDown, faHeart, faBorder
 import { faTrello } from '@fortawesome/free-brands-svg-icons';
 import { MeService } from '@services/me.service';
 import { Board } from '@models/board.model';
+import { Card } from '@models/card.model';
 
 @Component({
   selector: 'app-boards',
@@ -37,5 +38,7 @@ export class BoardsComponent implements OnInit{
       this.boards = boards
     })
   }
+
+  
 }
 

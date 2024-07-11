@@ -11,6 +11,7 @@ import { ToDo, Column } from '@models/todo.model';
 import { BoardsService } from '@services/boards.service';
 import { Board } from '@models/board.model';
 import { Card } from '@models/card.model';
+import { CardsService } from '@services/cards.service';
 
 @Component({
   selector: 'app-board',
@@ -68,7 +69,8 @@ export class BoardComponent implements OnInit {
   constructor(
     private dialog: Dialog,
     private route: ActivatedRoute,
-    private boardService: BoardsService
+    private boardService: BoardsService,
+    private cardService: CardsService
   ) {}
 
   ngOnInit(){
@@ -94,7 +96,13 @@ export class BoardComponent implements OnInit {
         event.previousIndex,
         event.currentIndex
       );
-    }
+    };
+    //after movement
+    const position = this.boardService.getPosition(event.container.data, event.currentIndex);
+    const card =  event.container.data[event.currentIndex];
+    const listId = event.container.id;
+    this.updateCard(card, position, listId);
+
   }
 
   addColumn() {
@@ -125,4 +133,15 @@ export class BoardComponent implements OnInit {
       this.board = board
     })
   }
+
+  private updateCard(card: Card, position: number, listId: string | number){
+    this.cardService.update(card.id, { position, listId })
+    .subscribe((cardUpdated) => {
+      
+    }
+
+    )
+  }
+  
+
 }
