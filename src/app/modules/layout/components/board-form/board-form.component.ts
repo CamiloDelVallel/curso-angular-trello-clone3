@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { BoardsService } from '@services/boards.service';
+import { Colors } from '@models/colors.model';
+import { Router } from '@angular/router';
+import { Output } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-board-form',
@@ -7,12 +12,19 @@ import { FormBuilder } from '@angular/forms';
 })
 export class BoardFormComponent {
 
-  form = this.formBuilder.group({
-    title: [''],
-    backgroundColor: ['']
+  @Output() closeOverlay = new EventEmitter<boolean>();
+
+  form = this.formBuilder.nonNullable.group({
+    title: ['', Validators.required],
+    backgroundColor: new FormControl<Colors>('sky', {
+      nonNullable: true,
+      validators: [Validators.required]
+    })
   })
   constructor(
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private boardService: BoardsService,
+    private router: Router,
   ){
 
   }
@@ -20,6 +32,11 @@ export class BoardFormComponent {
   doSave(){
     if(this.form.valid){
       const { title, backgroundColor} = this.form.getRawValue();
+      this.boardService.createBoard(title, backgroundColor)
+      .subscribe(board => {
+        this.closeOverlay.next(false)
+        this.router.navigate(['app/boards', board.id])
+      })
     } else {
       this.form.markAllAsTouched();
     }

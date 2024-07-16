@@ -65,8 +65,6 @@
           {{ board.title }}
         </app-card-color>
       </a>
-      <a routerLink="/app/boards/1" class="w-full bg-sky-700 px-4 py-2 rounded text-white font-bold h-24">Board 1</a>
-      <a [routerLink]="['/app/boards', board.id]" *ngFor="let board of boards">{{ board.title }}</a>
     </div>
   </div>
 </div>
